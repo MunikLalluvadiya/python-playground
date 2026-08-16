@@ -67,11 +67,15 @@ class user:
     @staticmethod
     def view_courses():
         with open("Courses.csv","r") as file:
+                
             reader = csv.DictReader(file)
             for deta in reader:
-                for key,vel in deta.items():
-                    print(key,":",vel)
-                print("----------------")
+                if deta["Status"].lower() == "approved":
+                    for key,vel in deta.items():
+                        print(key,":",vel)
+                    print("----------------")
+                else:
+                    continue
 
 class admin(user):
     def __init__(self, User_ID, User_Name, Email, Password, Role="admin"):
@@ -85,7 +89,58 @@ class admin(user):
                 for key,vel in deta.items():
                     print(key,":",vel)
                 print("--------------")
+
+    def View_Pending_Courses(self):
+
+        found = True
+        with open("Courses.csv","r") as file:
+            reader = csv.DictReader(file)
+            for deta in reader:
+                if deta["Status"].lower() == "pending":
+                    found = False
+                    for key,vel in deta.items():
+                        print(key,":",vel)
+                    print("----------------")
                  
+                else:
+                    continue
+        if found:
+            print("-----------------")
+            print(" No Deta Found. ")
+            print("-----------------")
+
+    def Approve_And_Reject_Course(self):
+        Course_ID = (input(" Enter Course ID : "))
+        found = True
+        Tem_Deta = []
+
+        with open("Courses.csv","r") as file:
+            reader = csv.reader(file)
+            for deta in reader:
+                if Course_ID == deta[0]:
+                    found = False
+                    Appruvel = input(" Enter Approve(Y) and Rejected(N) : ")
+                    if Appruvel == "Y":
+                        deta[-1] = "Approved"
+                    else:
+                        deta[-1] = "Rejected"
+                Tem_Deta.append(deta)
+
+        if not found:
+            with open("Courses.csv","w",newline="") as file:
+                writer = csv.writer(file)
+                writer.writerows(Tem_Deta)
+                print(" Data Updeted. ")
+        
+        if found:
+            print(" No Data Found. ")
+
+          
+
+                    
+
+
+
 
     
 
@@ -98,6 +153,7 @@ class teacher(user):
         Course_Name = input(" Enter Course Name :")
         Duration = input(" Enter Duration :")
         Fee = int(input(" Enter Fees :")) 
+        Status = "pending"
 
         Add_Course = [Course_ID,Course_Name,Duration,Fee]
         List_Topic = []
@@ -111,16 +167,52 @@ class teacher(user):
                 break
         joined = ";".join(List_Topic)
         Add_Course.append(joined)
+        Add_Course.append(Status)
+        
 
 
-        with open("Course.csv","a",newline="")as file:
+        with open("Courses.csv","a",newline="")as file:
             writer = csv.writer(file)
 
-            if (os.path.getsize("Course.csv") <= 0):
-                writer.writerow(["Course_ID","Course_Name","Duration","Fee","Topics"]) 
+            if (os.path.getsize("Courses.csv") <= 0):
+                writer.writerow(["Course_ID","Course_Name","Duration","Fee","Topics","Status"]) 
 
             writer.writerow(Add_Course)
         print(" Course Added Sucsessfull. ")
+
+
+    def Check_Student_Attendance(self):
+        student_Name = (input(" Enter Student Name : "))
+        found = True
+        with open("Enrollment.csv","r")as file:
+            reader = csv.DictReader(file)
+
+            for deta in  reader: 
+                if deta["Student_Name"] == student_Name:
+                    found = False
+                    Check_Att = 0 # present day
+                    dete_of_enroll_temp = deta["Enrollment_Date"]
+                    dete_of_enroll = datetime.date.fromisoformat(dete_of_enroll_temp)
+                    Total_Deys = datetime.date.today() - dete_of_enroll
+
+                    with open("Attendance.csv","r")as file_2:
+                        reader_2 = csv.DictReader(file_2)
+
+                        for deta_2 in reader_2:
+                            if deta_2["User_Name"] == student_Name:
+                                Check_Att += 1
+                    print("----------------------")
+                    print(f" Student Name : {deta["Student_Name"]} \n Total Deys : {Total_Deys.days} \n Present Days : {Check_Att} \n Date Of Enroll : {dete_of_enroll}")
+                    print("----------------------")
+
+            if found:
+                
+                print(" Student Not Found.")
+                            
+
+
+
+
 
 
 class student(user):
@@ -132,6 +224,32 @@ class student(user):
             writer = csv.writer(file)
             writer.writerow([ self.User_ID, self.User_Name, self.Email, datetime.date.today(),"Present"])
         print(" Thenkyou For Coming...")
+
+    def Enroll_In_Course(self):
+        Course_ID = (input(" Enter Course ID : "))
+        Found = True
+        with open("Courses.csv","r")as file:
+            reader = csv.reader(file)
+            first = next(file)
+
+            for deta in reader:
+                    if Course_ID == deta[0]:
+                        Found = False
+    
+                        with open("Enrollment.csv","a",newline="")as file:
+                            writer = csv.writer(file)
+                        
+                            if (os.path.getsize("Enrollment.csv") <= 0):
+                                writer.writerow(["Student_ID","Student_Name","Course_ID","Course_Name","Enrollment_Date"]) 
+                        
+                            writer.writerow([ self.User_ID,self.User_Name,Course_ID,deta[1],datetime.date.today()])
+                    
+                        print(" Enroll Sucsessfull.")
+                        break
+                    
+            if Found:
+                print(" No Course Found. ")
+                    
 
 
 

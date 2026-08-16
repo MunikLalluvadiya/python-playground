@@ -1,2 +1,10 @@
-User_ID,User_Name,Email,Date,Attendance
-4,Priya Singh,priya@mail.com,2026-08-15,Present
+User_ID,User_Name,Email,Date,Status
+3,Raj Patel,raj@mail.com,2026-07-21,Present
+3,Raj Patel,raj@mail.com,2026-07-22,Present
+3,Raj Patel,raj@mail.com,2026-07-23,Absent
+3,Raj Patel,raj@mail.com,2026-07-24,Present
+3,Raj Patel,raj@mail.com,2026-08-10,Present
+3,Raj Patel,raj@mail.com,2026-08-11,Absent
+4,Priya Singh,priya@mail.com,2026-08-02,Present
+4,Priya Singh,priya@mail.com,2026-08-05,Present
+3,Raj Patel,raj@mail.com,2026-08-16,Present
